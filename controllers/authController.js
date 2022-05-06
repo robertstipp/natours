@@ -91,7 +91,7 @@ exports.logout = (req, res) => {
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check of it's there
   let token;
-  let refresh;
+
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
@@ -99,7 +99,6 @@ exports.protect = catchAsync(async (req, res, next) => {
     token = req.headers.authorization.split(' ')[1];
   } else if (req.cookies.jwt) {
     token = req.cookies.jwt;
-    refresh = req.cookies.refresh;
   }
 
   if (!token) {
@@ -109,13 +108,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
 
   // 2) Verification token
-  const decode = promisify(jwt.verify);
-  const decoded = decode(token, process.env.JWT_SECRET)
-    .then(console.log(refresh))
-    .catch(error => {
-      if (error.message === 'jwt expired')
-        console.log('expired jwt just bobby');
-    });
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   // 3) Check if user still exists
   const currentUser = await User.findById(decoded.id);
@@ -145,7 +138,6 @@ exports.protect = catchAsync(async (req, res, next) => {
 exports.isLoggedIn = async (req, res, next) => {
   if (req.cookies.jwt) {
     try {
-      console.log('.....Verifying');
       // 1) verify token
       const decoded = await promisify(jwt.verify)(
         req.cookies.jwt,

@@ -42,7 +42,7 @@ bookingSchema.pre(/^find/, function(next) {
 bookingSchema.pre('save', async function(next) {
   const tour = await Tour.findById(this.tour);
   const startDate = tour.startDates.id(this.date);
-  console.log(startDate.participants);
+  // console.log(startDate.participants);
 
   // If there is a maximum number of participants, throw an error.
   if (startDate.participants >= startDate.maxParticipants) {

@@ -10,7 +10,7 @@ const tokenGenerator = new TokenGenerator('a', 'a', {
 });
 
 // Token Generator needs to be signed
-console.log(tokenGenerator);
+// console.log(tokenGenerator);
 
 token = tokenGenerator.sign(
   { id: 'something' },
@@ -22,6 +22,6 @@ setTimeout(function() {
     verify: { audience: 'myaud', issuer: 'myissuer' },
     jwtid: '2'
   });
-  console.log(jwt.decode(token, { complete: true }));
-  console.log(jwt.decode(token2, { complete: true }));
+  // console.log(jwt.decode(token, { complete: true }));
+  // console.log(jwt.decode(token2, { complete: true }));
 }, 3000);
