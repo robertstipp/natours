@@ -12,18 +12,9 @@ const signToken = id => {
   });
 };
 
-const refreshToken = id => {
-  return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN
-  });
-};
-
 const createSendToken = async (user, statusCode, req, res) => {
   const token = signToken(user._id);
-  const userDoc = await User.findById(user._id);
-  const refresh = refreshToken(Date.now() + 17);
-  userDoc.refreshToken.push(refresh);
-  await userDoc.save();
+
   res.cookie('jwt', token, {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
@@ -32,15 +23,13 @@ const createSendToken = async (user, statusCode, req, res) => {
     secure: req.secure || req.headers['x-forwarded-proto'] === 'https'
   });
 
-  res.cookie('refresh', refresh);
-
   // Remove password from output
   user.password = undefined;
 
   res.status(statusCode).json({
     status: 'success',
     token,
-    refresh,
+
     data: {
       user
     }
